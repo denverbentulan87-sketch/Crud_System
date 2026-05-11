@@ -210,7 +210,7 @@ h1 {
 
 .btn-delete {
     color:#ff4d4d;
-    border:1px solid rgba(255,0,0,0.3);
+    border:1px solid rgba(255, 0, 0, 0.34);
     padding:6px 12px;
     border-radius:10px;
     text-decoration:none;
