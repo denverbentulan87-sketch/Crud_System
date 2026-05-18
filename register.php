@@ -63,7 +63,7 @@ body{
     url('https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?q=80&w=1974&auto=format&fit=crop') center/cover no-repeat;
   display:flex;
   flex-direction:column;
-  overflow:hidden;
+  overflow-y:auto;
   color:var(--text);
 }
 

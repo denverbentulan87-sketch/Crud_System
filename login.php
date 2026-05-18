@@ -56,7 +56,7 @@ body{
     url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=1974&auto=format&fit=crop') center/cover no-repeat;
   display:flex;
   flex-direction:column;
-  overflow:hidden;
+  overflow-y:auto;
   color:var(--text);
 }
 
