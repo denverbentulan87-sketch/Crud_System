@@ -142,7 +142,7 @@ foreach ($movies as $m) $by_status[$m['status']][]=$m;
 <title>Cinema Vault — <?= htmlspecialchars($username) ?>'s Watchlist</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--black:#0a0a0a;--dark:#141414;--surface:#1a1a1a;--card:#222;--border:#2a2a2a;--red:#e50914;--red-hover:#f40612;--gold:#f5c518;--text:#e5e5e5;--muted:#777;--white:#fff;--radius:6px;}
+:root{--black:#0a0a0a;--dark:#141414;--surface:#1a1a1a;--card:#222;--border:#2a2a2a;--red:#e50914;--red-hover:#f40612;--gold:#f5c518;--text:#e5e5e5;--muted:#777;--white:#fff;--radius:6px;--orange:#ff6b35;--orange-hover:#ff8555;}
 *{margin:0;padding:0;box-sizing:border-box;}html{scroll-behavior:smooth;}
 body{background:var(--black);color:var(--text);font-family:'Outfit',sans-serif;min-height:100vh;overflow-x:hidden;}
 ::-webkit-scrollbar{width:6px;height:6px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:#333;border-radius:3px;}
@@ -155,8 +155,10 @@ body{background:var(--black);color:var(--text);font-family:'Outfit',sans-serif;m
 .nav-user{font-size:.85rem;color:var(--muted);}
 .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:var(--radius);font-family:'Outfit',sans-serif;font-size:.875rem;font-weight:600;cursor:pointer;border:none;transition:all .2s;text-decoration:none;}
 .btn-red{background:var(--red);color:#fff;}.btn-red:hover{background:var(--red-hover);transform:translateY(-1px);}
+.btn-orange{background:var(--orange);color:#fff;}.btn-orange:hover{background:var(--orange-hover);transform:translateY(-1px);box-shadow:0 4px 15px rgba(255,107,53,.4);}
 .btn-outline{background:transparent;color:var(--text);border:1px solid rgba(255,255,255,.3);}.btn-outline:hover{border-color:rgba(255,255,255,.7);background:rgba(255,255,255,.08);}
 .btn-ghost{background:transparent;color:var(--muted);border:none;font-size:.8rem;padding:6px 12px;}.btn-ghost:hover{color:var(--text);}
+.btn-danger-outline{background:transparent;color:#ff4d4d;border:1.5px solid #ff4d4d;}.btn-danger-outline:hover{background:#ff4d4d;color:#fff;transform:translateY(-1px);}
 
 /* HERO */
 .hero{padding:120px 4% 60px;position:relative;overflow:hidden;}
@@ -286,6 +288,26 @@ body{background:var(--black);color:var(--text);font-family:'Outfit',sans-serif;m
 .confirm-modal p{font-size:.85rem;color:var(--muted);margin-bottom:24px;}
 .confirm-actions{display:flex;gap:10px;justify-content:center;}
 
+/* LOGOUT MODAL SPECIAL STYLING */
+.logout-confirm-modal{padding:36px 32px;}
+.logout-confirm-modal .logout-icon-wrap{
+  width:72px;height:72px;border-radius:50%;
+  background:linear-gradient(135deg,rgba(255,107,53,.2),rgba(229,9,20,.15));
+  border:2px solid rgba(255,107,53,.4);
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 20px;font-size:2rem;
+}
+.logout-confirm-modal h3{font-size:1.35rem;color:var(--white);margin-bottom:10px;font-family:'Bebas Neue',sans-serif;letter-spacing:1px;}
+.logout-confirm-modal .user-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:30px;padding:6px 16px;margin-bottom:20px;
+  font-size:.85rem;color:var(--muted);
+}
+.logout-confirm-modal .user-badge strong{color:var(--gold);}
+.logout-confirm-modal p{font-size:.875rem;color:var(--muted);margin-bottom:28px;line-height:1.6;}
+.logout-confirm-modal .confirm-actions{display:flex;gap:12px;justify-content:center;}
+
 /* TOAST */
 .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--surface);color:var(--text);padding:12px 24px;border-radius:40px;font-size:.85rem;border:1px solid var(--border);z-index:2000;transition:transform .3s;box-shadow:0 8px 32px rgba(0,0,0,.5);}
 .toast.show{transform:translateX(-50%) translateY(0);}
@@ -304,6 +326,7 @@ body{background:var(--black);color:var(--text);font-family:'Outfit',sans-serif;m
   .form-grid{grid-template-columns:1fr;}
   .detail-title{font-size:1.8rem;}
   .movie-card{flex:0 0 140px;}
+  .logout-confirm-modal .confirm-actions{flex-direction:column;}
 }
 </style>
 </head>
@@ -312,14 +335,17 @@ body{background:var(--black);color:var(--text);font-family:'Outfit',sans-serif;m
 <nav class="navbar" id="navbar">
   <a class="nav-logo" href="index.php">CINEMA VAULT</a>
   <div class="nav-right">
-    <span class="nav-user">👤 <?= htmlspecialchars($username) ?></span>
     <div class="view-toggle">
       <button class="view-btn active" id="btnNetflix" onclick="setView('netflix')">▤ Rows</button>
       <button class="view-btn" id="btnGrid"    onclick="setView('grid')">⊞ Grid</button>
     </div>
     <button class="btn btn-red" onclick="openAddModal()">+ Add Movie</button>
     <button class="btn btn-outline" onclick="openModal('clearAllModal')">Clear All</button>
-    <a class="btn btn-ghost" href="logout.php">Logout</a>
+    <!-- UPDATED LOGOUT BUTTON — orange CTA matching Add Movie style -->
+    <button class="btn btn-orange" onclick="openModal('logoutModal')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Logout
+    </button>
   </div>
 </nav>
 
@@ -638,6 +664,36 @@ function renderCard($movie){
   </div>
 </div>
 
+<!-- ════ LOGOUT CONFIRM MODAL (NEW) ════ -->
+<div class="modal-backdrop" id="logoutModal">
+  <div class="modal" style="width:min(420px,90vw)">
+    <div class="logout-confirm-modal">
+      <div class="logout-icon-wrap">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ff6b35" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+          <polyline points="16 17 21 12 16 7"/>
+          <line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+      </div>
+      <h3>Leaving So Soon?</h3>
+      <div class="user-badge">
+        <span>👤</span>
+        <span>Signed in as <strong><?= htmlspecialchars($username) ?></strong></span>
+      </div>
+      <p>Do you want to logout from Cinema Vault? Your watchlist will be saved and ready when you return.</p>
+      <div class="confirm-actions">
+        <button class="btn btn-outline" onclick="closeModal('logoutModal')" style="flex:1;justify-content:center;padding:11px 20px;">
+          Stay &amp; Watch
+        </button>
+        <a href="logout.php" class="btn btn-orange" style="flex:1;justify-content:center;padding:11px 20px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Yes, Logout
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -674,7 +730,6 @@ function openEditModal(m){
   document.getElementById('editStatus').value= m.status;
   setStars('edit',parseInt(m.rating)||0);
   resetZone('editZone','editFile');
-  // Show existing cover thumbnail inside zone as hint
   if(m.cover_url){ showZonePreview('editZone','editFile',m.cover_url,false); }
   openModal('editModal');
 }
@@ -716,29 +771,23 @@ function setStars(px,val){
 /* ── UPLOAD ZONE LOGIC ── */
 function resetZone(zoneId, fileId){
   const z=document.getElementById(zoneId);
-  // Remove any preview
   const pv=z.querySelector('.uz-preview'); if(pv)pv.remove();
   const rb=z.querySelector('.uz-remove');  if(rb)rb.remove();
-  // Restore placeholders
   z.querySelector('.uz-icon') .style.display='';
   z.querySelector('.uz-label').style.display='';
   z.querySelector('.uz-hint') .style.display='';
-  // Clear file input
   const f=document.getElementById(fileId); if(f) f.value='';
 }
 
 function showZonePreview(zoneId, fileId, src, allowRemove=true){
   const z=document.getElementById(zoneId);
-  // Hide placeholders
   z.querySelector('.uz-icon') .style.display='none';
   z.querySelector('.uz-label').style.display='none';
   z.querySelector('.uz-hint') .style.display='none';
-  // Build preview
   let pv=z.querySelector('.uz-preview');
   if(!pv){pv=document.createElement('div');pv.className='uz-preview';z.appendChild(pv);}
   pv.innerHTML=`<img src="${src}" alt="cover" onerror="this.src=''">
     <div class="uz-change">📁 Click to choose a different image</div>`;
-  // Remove button
   if(allowRemove){
     let rb=z.querySelector('.uz-remove');
     if(!rb){rb=document.createElement('button');rb.type='button';rb.className='uz-remove';z.appendChild(rb);}
